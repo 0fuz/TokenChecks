@@ -1,13 +1,26 @@
 {
+  "ts-node": {
+    "transpileOnly": true
+  },
   "compilerOptions": {
-    "target": "es2018",
+    "target": "ES2020",
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "outDir": "dist",
+    "moduleResolution": "node",
     "declaration": true,
-    "resolveJsonModule": true
+    "sourceMap": true,
+    "types": [
+      "node",
+      "mocha"
+    ],
+    "stripInternal": true,
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["./test", "./typechain"],
-  "files": ["./hardhat.config.ts"]
+  "include": [
+    "src/**/*"
+  ],
+  "resolveJsonModule": true
 }

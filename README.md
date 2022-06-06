@@ -1,54 +1,81 @@
-# Token Checks for MEV
+# Token Checks for MEV and bots
 
-On-chain checks for common types of smart contract scams. Useful for anyone exploring MEV. See the original [TokenProvidence](https://github.com/0xV19/TokenProvidence) repo for more details on these types of checks. Check them out in `/contracts`.
+On-chain checks of smart contract ERC20 tradable tokens. Shows:
+- Token is tradable in both directions (buy and sell allowed)
+- Token have such buyFee and sellFee
+- Token have flexible fees. (need pass different swap amounts)
 
-This repo is a hardhat-ified and constructor optimized version of [OxV19's](https://twitter.com/0xV19) providence checks. Thanks to [DrGorilla](https://twitter.com/DrGorilla_md) for the constructor input to avoid deploying the contracts at all. 
+Thanks to:
+- [TokenProvidence](https://github.com/0xV19/TokenProvidence)
+- [OxV19's](https://twitter.com/0xV19)
+- [DrGorilla](https://twitter.com/DrGorilla_md)
+- [libevm's tweet](https://twitter.com/libevm/status/1476791869585588224)
+- [Devan Non](https://twitter.com/devan_non)
 
-I added some basic tests to show how they can be used. Check them out in `test/` to see how to use these contracts efficently.
+I added measure number of token buy/sell kfs.
 
-I also added on an example of [geth's state override set](https://geth.ethereum.org/docs/rpc/ns-eth#3-object---state-override-set) inspired by [libevm's tweet](https://twitter.com/libevm/status/1476791869585588224). These are the `flashSwap.ts` files in `test` and `scripts`. These need to be heavily modified to be useful in a production setting, but they serve as an example for now.
+I added support of various networks with simple setup. ETH, BSC tested. Any EVM-like supported.
 
-## Setup
- - `cp .env.example .env`
- - Fill out the `.env` file
- - `npm install`
+# Setup
+- `npm i`
 
-## Tests
+# New blockchain setup
+1. `hardhat.config.ts` - append new **network**: url, chainId
+2. `dexSettings.ts` - append new dex by sample.
 
- - `npm run test`
-
-## Usage
-
-### Checking Tokens using a constructor only contract
-
- - `npm run token <token address>`
- - e.g. `npm run token 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48` for USDC
- - e.g. `npm run token 0x843976d0705c821ae02ab72ab505a496765c8f93` for some honeypot
-
-### Checking Tokens using geth's state override set
-
- - `npm run token <token address>`
- - e.g. `npm run token-override 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48` for USDC
- - e.g. `npm run token-override 0x843976d0705c821ae02ab72ab505a496765c8f93` for some honeypot
-
-This seems to be the more robust way, so as to avoid intelligent malicious contracts like `EvilERC20`. Thanks to Ape Dev's [tweet](https://twitter.com/_apedev/status/1479652586018033666) and [PR](https://github.com/devanonon/TokenChecks/pull/1) for this very sneaky contract.
-
-### Flash Swap
-There is also a [Uniswap Flash Swap](https://docs.uniswap.org/protocol/V2/guides/smart-contract-integration/using-flash-swaps) example between UniswapV2 and Sushiswap on their ETH<>DAI pairs. Running `npm run flash` will test the opportunity without deploying any contracts.
-
-Note, this example is unlikely to find an arb as that's a heavily watched pair. Also, the example is:
- - Not gas optimized.
- - Only works one way and tries to get a profit of 1e-18 DAI.
- - Probably not secure enough for production use.
-
-Think of it as a proof of concept to help you learn about flash swaps and usage of `eth_call`.
-
-## Inspired by:
-
-- https://github.com/0xV19/TokenProvidence
-- https://github.com/drgorillamd/UniV2-burn
-- Epic PR here https://github.com/Uniswap/v2-periphery/pull/17/files
+# Usage
+- `npx hardhat --network <networkName> tokenCheck <dexSettingName> <tokenAddress>`
+- `npx hardhat --network <networkName> tokenCheckFromFile <dexSettingName> <fileWithTokens>`
 
 
-### WARNING
-Not responsible for any errors which may occur. Use at your own risk.
+- ETH chain, uniswap v2, UNI token
+    ```shell
+    npx hardhat --network eth tokenCheck eth_uni_v2 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984
+    ```
+  
+    ```shell
+    Check token 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984 with name Uniswap
+    in: 1.0 out: 0.994010024370934618 | ok
+    kfBuy: 1.0 kfSell: 1.0
+    delta: 0
+    minKf: 1
+    ```
+
+- BSC chain, pancakeswap v2, CAKE token
+  ```shell
+  npx hardhat --network bsc tokenCheck bsc_psc_v2 0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82
+  ```
+  
+  ```shell
+  Check token 0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82 with name PancakeSwap Token
+  in: 1.0 out: 0.995006266890376909 | ok
+  kfBuy: 1.0 kfSell: 1.0
+  delta: 0
+  minKf: 1
+  ```
+
+- BSC chain, pancakeswap v2, SAFEMOON token
+  ```shell
+  npx hardhat --network bsc tokenCheck bsc_psc_v2 0x42981d0bfbAf196529376EE702F2a9Eb9092fcB5
+  ```
+
+  ```shell
+  Check token 0x42981d0bfbAf196529376EE702F2a9Eb9092fcB5 with name SafeMoon
+  in: 1.0 out: 0.806570187162258922 | !!!!
+  kfBuy: 0.900000018 kfSell: 0.900319766
+  delta: 0.0003197480000000086
+  minKf: 0.900000018
+  ```
+  
+- BSC chain, pancakeswap v2, scam token
+  ```shell
+  npx hardhat --network bsc tokenCheck bsc_psc_v2 0x8159b2f490f4d606C6B9bbB724fb7d001da6f153
+  ```
+  ```shell
+  FAILED ToleranceCheck 0x8159b2f490f4d606C6B9bbB724fb7d001da6f153 Kishu Father
+  ```
+  
+- For bulk token checks use this:
+  ```shell
+  npx hardhat --network bsc tokenCheckFromFile bsc_psc_v2 ./bscTokensForCheck.txt
+  ```

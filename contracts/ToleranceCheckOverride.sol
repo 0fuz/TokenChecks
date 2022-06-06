@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "./lib/IERC20.sol";
+import "./interfaces/IERC20.sol";
 import "./lib/UniswapV2Library08.sol";
-import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "./interfaces/IUniswapV2Router02.sol";
 
 // Adapted from https://github.com/0xV19/TokenProvidence/blob/master/contracts/TokenProvidence.sol
 // Buy and sell token. Keep track of ETH before and after.

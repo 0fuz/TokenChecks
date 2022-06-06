@@ -12,6 +12,7 @@ interface FlashSwapParams {
 }
 
 export default async function flash(params: FlashSwapParams, hre: HardhatRuntimeEnvironment): Promise<void> {
+  // @ts-ignore
   const ethers = hre.ethers;
   const utils = ethers.utils;
 

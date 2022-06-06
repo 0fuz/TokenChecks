@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "./lib/IERC20.sol";
-import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Callee.sol";
-import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
-import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
-import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
-import "@uniswap/lib/contracts/libraries/TransferHelper.sol";
+import "./interfaces/IERC20.sol";
+import "./interfaces/IUniswapV2Callee.sol";
+import "./interfaces/IUniswapV2Pair.sol";
+import "./interfaces/IUniswapV2Factory.sol";
+import "./interfaces/IUniswapV2Router02.sol";
+import "./lib/TransferHelper.sol";
 
 // You should really read https://docs.uniswap.org/protocol/V2/guides/smart-contract-integration/using-flash-swaps
 // in order to understand what's happening here

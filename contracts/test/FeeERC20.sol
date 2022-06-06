@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import "../lib/UniswapV2Library08.sol";
-import "@rari-capital/solmate/src/tokens/ERC20.sol";
-import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "./ERC20.sol";
+import "../interfaces/IUniswapV2Router02.sol";
 
 // An ERC20 token which has a high (20%) fee
 contract FeeERC20 is ERC20 {

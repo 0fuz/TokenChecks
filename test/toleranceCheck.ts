@@ -1,9 +1,11 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { parseEther } from "ethers/lib/utils";
+// @ts-ignore
 import { ethers } from "hardhat";
 import { promises as fs } from "fs";
-import { IUniswapV2Router02 } from "../typechain";
+// @ts-ignore
+import { IUniswapV2Router02 } from "../typechain-types";
 const utils = ethers.utils;
 
 const deadlineBuffer = 180;

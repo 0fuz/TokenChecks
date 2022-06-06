@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "./lib/IERC20.sol";
+import "./interfaces/IERC20.sol";
 import "./lib/UniswapV2Library08.sol";
-import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
-import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "./interfaces/IUniswapV2Pair.sol";
+import "./interfaces/IUniswapV2Router02.sol";
 
 // For now, expects arb opportunity to exist across token0
 contract UniswapV2FlashCaller {
