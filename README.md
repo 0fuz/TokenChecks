@@ -72,8 +72,8 @@ Added stateless SC version which not depends on eth_call.stateOverride feature a
 - `npx hardhat --network <networkName> tokenCheckStateless <dexSettingName> <tokenAddress>`
 - `npx hardhat --network <networkName> tokenCheckStatelessFromFile <dexSettingName> <fileWithTokens>`
 
-npx hardhat --network arb tokenCheck arb_sushi 0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8
-npx hardhat --network avax tokenCheckStateless avax_joe 0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E
+- npx hardhat --network arb tokenCheck arb_sushi 0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8
+- npx hardhat --network avax tokenCheckStateless avax_joe 0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E
 
 - ETH chain, uniswap v2, UNI token
     ```shell
