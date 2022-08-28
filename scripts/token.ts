@@ -6,6 +6,7 @@ interface TokenParams {
 
 export default async function token(params: TokenParams, hre: HardhatRuntimeEnvironment): Promise<void> {
   const routerAddress = "0x7a250d5630b4cf539739df2c5dacb4c659f2488d";
+  // @ts-ignore
   const ethers = hre.ethers;
   const utils = ethers.utils;
 

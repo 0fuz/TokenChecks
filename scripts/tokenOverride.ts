@@ -11,6 +11,7 @@ interface TokenParams {
 // Here, we use geth's state override set in eth_call to really simulate the blockchain
 export default async function tokenOverride(params: TokenParams, hre: HardhatRuntimeEnvironment): Promise<void> {
   const routerAddress = "0x7a250d5630b4cf539739df2c5dacb4c659f2488d";
+  // @ts-ignore
   const ethers = hre.ethers;
   const utils = ethers.utils;
 
@@ -54,3 +55,4 @@ export default async function tokenOverride(params: TokenParams, hre: HardhatRun
     console.error("FAILED ToleranceCheck");
   }
 }
+

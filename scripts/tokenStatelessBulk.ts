@@ -1,13 +1,13 @@
-
-
-// Here, we use geth's state override set in eth_call to really simulate the blockchain
-import {HardhatRuntimeEnvironment} from "hardhat/types";
-import * as fs from "fs";
-import {chunk, uniq} from "lodash";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import fs from "fs";
+import {chunk} from "lodash";
 import {parseEther} from "ethers/lib/utils";
-import tokenCheck from "../src/tokenCheckStateOverride";
+import tokenCheckStateless from "../src/tokenCheckStateless";
 
-export default async function tokenBulkOverrideCmd(params: { dexName:string, tokensFilePath:string }, hre: HardhatRuntimeEnvironment): Promise<void> {
+export const timeout = (ms: number) => new Promise(res => setTimeout(res, ms))
+
+export default async function tokenCheckStatelessBulk(params: { dexName:string, tokensFilePath:string }, hre: HardhatRuntimeEnvironment): Promise<void> {
+    console.warn('Be careful with wrapped native token. It will show "Tolerance failed"')
     console.log(params);
 
     let {dexName, tokensFilePath} = params;
@@ -34,12 +34,14 @@ export default async function tokenBulkOverrideCmd(params: { dexName:string, tok
         const bucket = buckets[i];
         await Promise.all(bucket.map(async (address:string) => {
             try {
-                let r = await tokenCheck({address, dexName}, hre, parseEther("1"))
+                // @ts-ignore
+                let r = await tokenCheckStateless({address, dexName}, parseEther("1"), hre, hre.ethers.provider)
                 result.push(r.r.join('\n'))
             } catch (e) {
-                console.log(e);
+                console.log("#33123",e);
             }
         }))
+        await timeout(5000)
     }
     console.log(result.join('\n'));
 }

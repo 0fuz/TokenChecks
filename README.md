@@ -12,21 +12,68 @@ Thanks to:
 - [libevm's tweet](https://twitter.com/libevm/status/1476791869585588224)
 - [Devan Non](https://twitter.com/devan_non)
 
-I added measure number of token buy/sell kfs.
+Added measure number of token buy/sell kfs.
 
-I added support of various networks with simple setup. ETH, BSC tested. Any EVM-like supported.
+Added support of various networks with simple setup. ETH, BSC tested. Any EVM-like supported.
+
+Added stateless SC version which not depends on eth_call.stateOverride feature and more flexible.
+
+### Modes:
+- **tokenCheck** - uses eth_call stateOverride feature. When eth_call context overwritten with own sc code and those sc called.
+- **tokenCheckStateless** - uses eth_call without stateOverride. All magic inside sc constructor and return assembly data.
+
+### Compatible blockchains (tokenCheckStateless):
+- Ethereum (1)
+- Binance Smart Chain (56)
+- Avalanche (43114)
+- Polygon (137)
+- Fantom (250)
+- Moonriver (1285)
+- Cronos (25)
+- Optimism (10)
+- Okc (66)
+- Gnosis (100)
+- Boba (288)
+
+### Compatible blockchains (tokenCheck):
+- Arbitrum (42161)
+
+### Not supported blockchains:
+#### Most of them not support state override inside eth_call. (Might be solved with manual SC deploy and call this address + 'from' set to wallet with high ETH):
+- Huobi Eco Chain (128) - "SERVER_ERROR"
+- Metis (1088) - "SERVER_ERROR"
+
+#### Not tested blockchains:
+- Aurora (1313161554) - Can't find dex fees and initCodeHash
+- Klaytn (8217) - uni-fork not popular
+- Harmony.one (1666600000) - uni-fork not found
+- Moonbeam (1284) - uni-fork not found
+- KCC (321) - Can't find dex fees and initCodeHash
+
+# Limitations
+- Wrapped version of native token shows wrong result "FAILED ToleranceCheck" that is why error "SAME_ADDRESS"
+  - WETH in ETH chain
+  - WBNB in BSC chain
+  - WMATIC in Polygon chain
+  - WAVAX in AVAX chain
+  - and so on
 
 # Setup
 - `npm i`
 
 # New blockchain setup
-1. `hardhat.config.ts` - append new **network**: url, chainId
-2. `dexSettings.ts` - append new dex by sample.
+1. `hardhat.config.ts` - append **network**: url, chainId
+2. `dexSettings.ts` - append dex by sample.
 
 # Usage
 - `npx hardhat --network <networkName> tokenCheck <dexSettingName> <tokenAddress>`
 - `npx hardhat --network <networkName> tokenCheckFromFile <dexSettingName> <fileWithTokens>`
 
+- `npx hardhat --network <networkName> tokenCheckStateless <dexSettingName> <tokenAddress>`
+- `npx hardhat --network <networkName> tokenCheckStatelessFromFile <dexSettingName> <fileWithTokens>`
+
+npx hardhat --network arb tokenCheck arb_sushi 0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8
+npx hardhat --network avax tokenCheckStateless avax_joe 0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E
 
 - ETH chain, uniswap v2, UNI token
     ```shell
@@ -70,6 +117,8 @@ I added support of various networks with simple setup. ETH, BSC tested. Any EVM-
 - BSC chain, pancakeswap v2, scam token
   ```shell
   npx hardhat --network bsc tokenCheck bsc_psc_v2 0x8159b2f490f4d606C6B9bbB724fb7d001da6f153
+  # or
+  npx hardhat --network bsc tokenCheckStateless bsc_psc_v2 0x8159b2f490f4d606C6B9bbB724fb7d001da6f153
   ```
   ```shell
   FAILED ToleranceCheck 0x8159b2f490f4d606C6B9bbB724fb7d001da6f153 Kishu Father
@@ -78,4 +127,6 @@ I added support of various networks with simple setup. ETH, BSC tested. Any EVM-
 - For bulk token checks use this:
   ```shell
   npx hardhat --network bsc tokenCheckFromFile bsc_psc_v2 ./bscTokensForCheck.txt
+  # or
+  npx hardhat --network bsc tokenCheckStatelessFromFile bsc_psc_v2 ./bscTokensForCheck.txt
   ```

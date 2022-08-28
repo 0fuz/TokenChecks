@@ -1,6 +1,7 @@
 import {HardhatRuntimeEnvironment} from "hardhat/types";
 import {dexSettings, TokenParams} from "../dexSettings";
 
+// depends on eth_call.state_override feature
 export default async function tokenCheck(params: TokenParams, hre: HardhatRuntimeEnvironment, startEth: any): Promise<{r: string[],x: any }> {
     const callingAddress = "0x0000000000000000000000000000000000000124";
     const key = params.dexName
@@ -63,6 +64,7 @@ export default async function tokenCheck(params: TokenParams, hre: HardhatRuntim
             token.name(),
             token.decimals(),
             ethers.provider.send("eth_call", params)
+            // provider.send("eth_call", params)
         ])
         r.push(`Check token ${address} with name ${call[0]}`);
         const tokenDecimals:any = BigInt(call[1])
@@ -71,30 +73,33 @@ export default async function tokenCheck(params: TokenParams, hre: HardhatRuntim
         // 1e18*0.9975*0.9975, psc_v2 pair fees
         let border = BigInt(startEth) * BigInt(dexFeeNumerator)/BigInt(dexFeeDenominator)*BigInt(dexFeeNumerator)/BigInt(dexFeeDenominator);
 
-        let amountIn = BigInt('0x'+returnedData.substring(2, 2+64))
-        let amountOut = BigInt('0x'+returnedData.substring(2+64, 2+64+64))
-        let midOut = BigInt('0x'+returnedData.substring(2+64+64, 2+64+64+64))
-        let midGot = BigInt('0x'+returnedData.substring(2+64+64+64, 2+64+64+64+64))
-        let ethExpectingBack = BigInt('0x'+returnedData.substring(2+64+64+64+64, 2+64+64+64+64+64))
-        let midKfBuy = midGot*(10n**tokenDecimals)/midOut // buy tokenB
-        let midKfSell = amountOut*(10n**tokenDecimals)/ethExpectingBack // sell tokenB
+        if (returnedData == '0x') {
+            r.push('returnedData: '+returnedData);
+        } else {
+            let amountIn = BigInt('0x'+returnedData.substring(2, 2+64))
+            let amountOut = BigInt('0x'+returnedData.substring(2+64, 2+64+64))
+            let midOut = BigInt('0x'+returnedData.substring(2+64+64, 2+64+64+64))
+            let midGot = BigInt('0x'+returnedData.substring(2+64+64+64, 2+64+64+64+64))
+            let ethExpectingBack = BigInt('0x'+returnedData.substring(2+64+64+64+64, 2+64+64+64+64+64))
+            let midKfBuy = midGot*(10n**tokenDecimals)/midOut // buy tokenB
+            let midKfSell = amountOut*(10n**tokenDecimals)/ethExpectingBack // sell tokenB
 
-        let buy = ethers.utils.formatUnits(midKfBuy, parseInt(tokenDecimals))
-        let sell = ethers.utils.formatUnits(midKfSell, parseInt(tokenDecimals))
+            let buy = ethers.utils.formatUnits(midKfBuy, parseInt(tokenDecimals))
+            let sell = ethers.utils.formatUnits(midKfSell, parseInt(tokenDecimals))
 
-        let passed = amountOut > border ? "ok" : "!!!!";
-        x.minKf = Math.min(buy,sell)
+            let passed = amountOut > border ? "ok" : "!!!!";
+            x.minKf = Math.min(buy,sell)
 
-        r.push(`in: ${ethers.utils.formatEther(amountIn)} out: ${ethers.utils.formatEther(amountOut)} | ${passed}`);
-        r.push(`kfBuy: ${buy} kfSell: ${sell}`);
-        r.push('delta: '+Math.abs(parseFloat(buy)-parseFloat(sell)));
-        r.push('minKf: '+x.minKf);
+            r.push(`in: ${ethers.utils.formatEther(amountIn)} out: ${ethers.utils.formatEther(amountOut)} | ${passed}`);
+            r.push(`kfBuy: ${buy} kfSell: ${sell}`);
+            r.push('delta: '+Math.abs(parseFloat(buy)-parseFloat(sell)));
+            r.push('minKf: '+x.minKf);
+        }
 
-
-        // console.log('------');
     } catch (e) {
-        // console.log(e);
+        console.log(e);
         r.push("FAILED ToleranceCheck " + address +" "+(await token.name()));
     }
     return {r, x};
 }
+
